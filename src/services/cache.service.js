@@ -1,10 +1,18 @@
 import { CACHE_TTL_MS } from '../utils/constants.js';
 
-/** @type {Map<string, { value: unknown, expiresAt: number }>} */
-const store = new Map();
+/**
+ * @typedef {object} CacheEntry
+ * @property {unknown} [value]
+ * @property {Promise<unknown>} [promise]
+ * @property {number} expiresAt
+ */
+
+/** @type {Map<string, CacheEntry>} */
+const cache = new Map();
 
 /**
  * Returns the cached value for `key`, or runs `producer`, caches and returns it.
+ * In-flight requests are deduplicated by caching the pending promise.
  * @template T
  * @param {string} key
  * @param {() => Promise<T>} producer
@@ -12,18 +20,32 @@ const store = new Map();
  * @returns {Promise<T>}
  */
 export async function withCache(key, producer, ttl = CACHE_TTL_MS) {
-  const hit = store.get(key);
+  const hit = cache.get(key);
+  const now = Date.now();
 
-  if (hit && hit.expiresAt > Date.now()) {
-    return /** @type {T} */ (hit.value);
+  if (hit) {
+    if (hit.promise) return /** @type {Promise<T>} */ (hit.promise);
+    if (hit.expiresAt > now) return /** @type {T} */ (hit.value);
   }
 
-  const value = await producer();
-  store.set(key, { value, expiresAt: Date.now() + ttl });
+  const promise = producer().then(
+    (value) => {
+      cache.set(key, { value, expiresAt: Date.now() + ttl });
+      return value;
+    },
+    (error) => {
+      if (cache.get(key)?.promise === promise) {
+        cache.delete(key);
+      }
+      throw error;
+    },
+  );
 
-  return value;
+  cache.set(key, { promise, expiresAt: now + ttl });
+
+  return promise;
 }
 
 export function clearCache() {
-  store.clear();
+  cache.clear();
 }

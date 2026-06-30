@@ -20,8 +20,13 @@ const state = {
 const listeners = new Set();
 
 /** @returns {Readonly<AppState>} */
+function snapshot() {
+  return Object.freeze({ ...state });
+}
+
+/** @returns {Readonly<AppState>} */
 export function getState() {
-  return state;
+  return snapshot();
 }
 
 /**
@@ -30,7 +35,9 @@ export function getState() {
  */
 export function setState(patch) {
   Object.assign(state, patch);
-  for (const listener of listeners) listener(state);
+  const frozen = snapshot();
+
+  for (const listener of listeners) listener(frozen);
 }
 
 /**
