@@ -1,6 +1,6 @@
 # Your Energy
 
-> Adaptive fitness-exercise catalog with filtering, favorites, detail modals, ratings, and a newsletter subscription. Team project for the **MSc in Software Engineering & AI**, built with **Astro (static site) + vanilla-JS islands — no UI framework**.
+> Adaptive fitness-exercise catalog with filtering, favorites, detail modals, ratings, and a newsletter subscription. Team project for the **MSc in Software Engineering & AI**, built with **Astro**.
 
 <p>
   <img alt="Astro" src="https://img.shields.io/badge/Astro-7-ff5d01?logo=astro&logoColor=fff" />
@@ -24,7 +24,6 @@
 - [Working in `src/` (per-folder guide)](#working-in-src-per-folder-guide)
 - [Usage Guide](#usage-guide)
   - [Shared State (store)](#shared-state-store)
-  - [Rendering Components (template literals)](#rendering-components-template-literals)
   - [Loading Indicator (loader)](#loading-indicator-loader)
 - [API Reference](#api-reference)
 - [Code Quality](#code-quality)
@@ -33,7 +32,7 @@
 
 ## Features
 
-- **Two pages** — Home (catalog) and Favorites, pre-rendered as static HTML by Astro.
+- **Two pages** — Home (catalog) and Favorites. The catalog grid is fetched at build time and pre-rendered into static HTML for SEO; the island then hydrates it on the client.
 - **Filtering** by Muscles / Body parts / Equipment with server-side pagination.
 - **Search** within a selected category (submit-driven).
 - **Exercise modal** with details, rating, and add/remove favorites.
@@ -50,7 +49,7 @@
 | Framework     | [Astro 7](https://astro.build/) — static output (`output: 'static'`), islands            |
 | Markup        | `.astro` components — `src/pages/*.astro` + shared `src/layouts/BaseLayout.astro`        |
 | Styles        | SCSS — global system (`abstracts`/`base`/`layout`) + scoped `<style>` per page           |
-| Logic         | JavaScript ES6+ — vanilla islands; DOM rendering via template literals (no engine)       |
+| Logic         | JavaScript ES6+                                                                          |
 | HTTP          | [Axios](https://axios-http.com/) — single instance + interceptors                        |
 | Notifications | [iziToast](https://izitoast.marcelodolza.com/), wrapped in `utils/notify.js`             |
 | SEO           | Canonical + Open Graph/Twitter + JSON-LD in the layout, `@astrojs/sitemap`, robots.txt   |
@@ -181,7 +180,7 @@ flowchart TB
 
 ### Pages & components
 
-Each page composes `.astro` components inside `BaseLayout`. Every section renders its structure to **static HTML at build time**, then hydrates as an [island](https://docs.astro.build/en/concepts/islands/) via a co-located `<script>` that calls its `init<Name>(root)` seam — browser JS ships per component, only for what's wired ([Astro: client-side scripts](https://docs.astro.build/en/guides/client-side-scripts/)). Modals are **not** rendered on load — they open on user action.
+Each page composes `.astro` components inside `BaseLayout`. Every section renders its structure to **static HTML at build time**, then hydrates as an [island](https://docs.astro.build/en/concepts/islands/) via a co-located `<script>` that calls its `init<Name>(root)` seam — browser JS ships per component, only for what's wired ([Astro: client-side scripts](https://docs.astro.build/en/guides/client-side-scripts/)). The catalog grid goes a step further — it pre-renders its **data** at build time, so real category content is in the initial HTML for crawlers. Modals are **not** rendered on load — they open on user action.
 
 ```mermaid
 flowchart TB
@@ -278,13 +277,6 @@ export async function getQuote({ loader } = {}) {
 
 Stateless, side-effect-free helpers and shared constants. **No DOM, no HTTP, no state** — except [`api-events.js`](src/utils/api-events.js), a tiny pub/sub bus used by Axios interceptors to emit loader/notify events without importing UI modules. One helper group per file; constants live in [`constants.js`](src/utils/constants.js).
 
-```js
-import { isValidEmail } from '../utils/validators.js';
-import { EMAIL_PATTERN, STORAGE_KEYS } from '../utils/constants.js';
-
-if (!isValidEmail(email)) notifyError('Invalid email');
-```
-
 > A literal used in ≥2 places, or a shared contract (endpoint, storage key, regex), goes here. A one-off string stays inline at its call site.
 
 ### `src/services/` — state & orchestration
@@ -312,10 +304,21 @@ Feature components are `.astro` files (static markup + optional co-located `<scr
 - **Cross-cutting logic** (HTTP, store, storage, validators, events) → `api/`, `services/`, `utils/`. Framework-agnostic ESM, imported by any island.
 - **Component logic** → a co-located `<name>.client.js` module next to the `.astro`, exporting `init<Name>(root)` and wired by a thin `<script>`. This keeps one folder per component and one obvious home for browser logic.
 
-Every section follows the **uniform island contract** — `Component.astro` (static host with a `data-component` hook) + `<name>.client.js` (`init<Name>(root)` seam) + `<script>` that wires them:
+Every section follows the **uniform island contract** — `Component.astro` (static host with a `data-component` hook) + `<name>.client.js` (`init<Name>(root)` seam) + `<script>` that wires them. Where it helps SEO the host is **pre-rendered at build time** and the island _adopts_ that markup instead of re-fetching it. The catalog grid does exactly this:
 
 ```astro
-<ul class="category-list" data-component="category-list"></ul>
+---
+// CategoryList.astro — fetches the default grid at build time
+const html = categories.map((c) => renderCategoryCard(c)).join('');
+---
+
+<ul
+  class="category-list"
+  data-component="category-list"
+  data-hydrated="false"
+  data-total-pages={String(totalPages)}
+  set:html={html}
+/>
 
 <script>
   import { initCategoryList } from './category-list.client.js';
@@ -324,40 +327,14 @@ Every section follows the **uniform island contract** — `Component.astro` (sta
 </script>
 ```
 
-> **Current state — the contract is wired everywhere; logic is stubbed except working references.** Each section renders a visible dashed placeholder at build time and calls its `init<Name>(root)` seam on the client. Fill the seam (reuse `api/` + `services/` + `utils/`) and keep the `data-component` hook so loaders/queries keep targeting it.
+> On hydration the island reads `data-hydrated` / `data-total-pages`: if the server already rendered the current view it **skips the first fetch** (no flicker, no wasted request) and re-renders only on a real user action (filter, search, pagination). If the build-time fetch failed, the grid ships empty and the island fetches on load as a fallback.
 >
-> - **Sections** (`header`, `hero`, `filters`, `category-list`, `exercise-card`, `pagination`, `daily-norm`, `footer`, `quote`) ship a static placeholder + an empty or partial `init<Name>(root)` seam.
-> - **Working references** — [`category-list`](src/components/category-list/category-list.client.js) (fetch + store + inline loading states) and [`scroll-up`](src/components/ui/scroll-up/scroll-up.client.js) (show-on-scroll + scroll-to-top).
 > - **Modals** (`exercise-modal`, `rating-modal`) export `open<Name>(...)` and open on user action (not on load). The shell — backdrop, close button, X / backdrop / Escape handling, **focus trap, body scroll lock, focus restore, accessible name**, listener cleanup, and "one modal at a time" — lives in the `ui/modal` primitive ([`openModal`](src/components/ui/modal/modal.js)); each modal supplies only its body content and an `aria-label`.
 > - **`ui/` primitives are JS by design, not `.astro`.** Lists (categories, exercises, pagination) are rendered on the client via `innerHTML`, and an `.astro` component cannot be embedded in a runtime HTML string. So `ui/button`, `ui/badge`, `ui/rating-stars` export pure `render<Name>(props)` string builders composed inside those client islands; `ui/loader` and `ui/modal` are imperative runtime primitives (overlay + modal shell). Converting them to `.astro` would create an unusable second source of truth — avoid it.
 
 ### `src/pages/` — routed pages
 
-File-based routes — `index.astro` (Home) and `favorites.astro`. Each wraps its content in `BaseLayout`, composes `.astro` components, and authors the page-section layout in a scoped `<style lang="scss">`. **No bootstrap/rendering logic here** — components own their own client scripts.
-
-```astro
----
-import Hero from '../components/hero/Hero.astro';
-import Quote from '../components/quote/Quote.astro';
-import BaseLayout from '../layouts/BaseLayout.astro';
----
-
-<BaseLayout title="Your Energy" description="Fitness exercises catalog">
-  <main>
-    <h1 class="visually-hidden">Your Energy — fitness exercises catalog</h1>
-    <Hero />
-    <Quote />
-  </main>
-</BaseLayout>
-
-<style lang="scss">
-  @use '../styles/abstracts' as *; // tokens/mixins only — emits no CSS
-
-  .exercises {
-    padding-block: 40px;
-  }
-</style>
-```
+File-based routes — `index.astro` (Home) and `favorites.astro`. Each wraps its content in `BaseLayout`, composes `.astro` components, and authors the page-section layout in a scoped `<style lang="scss">`. **No bootstrap/rendering logic here** — components own their own client scripts (including build-time data fetching, as the catalog grid does).
 
 ### `src/layouts/` — shared shell
 
@@ -410,35 +387,6 @@ unsubscribe();
 ```
 
 **Why a store?** Without one, each component keeps its own copy of `page` / `category` / favorites and they drift out of sync (e.g. pagination advances but the list stays behind). One source of truth, with subscriptions, keeps every view consistent and keeps components decoupled — pagination doesn't hold a reference to the list, it just writes to the store. Tasks that share state (category selection → exercises → pagination → modal → rating) coordinate exclusively through it.
-
-### Rendering Components (template literals)
-
-There is **no template engine**. Each component exports a pure `render*` function that returns an HTML string built with template literals. The caller injects the markup and then wires listeners.
-
-```js
-// components/exercise-card/exercise-card.js
-import { escapeHtml } from '../../utils/escape-html.js';
-
-export function renderExerciseCard(exercise) {
-  return `
-    <article class="exercise-card" data-id="${exercise._id}">
-      <h3 class="exercise-card__title">${escapeHtml(exercise.name)}</h3>
-      <button class="exercise-card__start" type="button">Start</button>
-    </article>
-  `;
-}
-```
-
-```js
-// where the list is mounted
-container.innerHTML = exercises.map(renderExerciseCard).join('');
-
-// Wire events once on the container (event delegation), not per card
-container.addEventListener('click', (event) => {
-  const card = event.target.closest('.exercise-card');
-  if (card) openExerciseModal(card.dataset.id);
-});
-```
 
 **Conventions:**
 
