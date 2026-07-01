@@ -1,6 +1,7 @@
 ---
 import 'modern-normalize';
 import '../styles/main.scss';
+import spriteSvg from '../../public/sprite.svg?raw';
 import Footer from '../components/footer/Footer.astro';
 import Header from '../components/header/Header.astro';
 import ScrollUp from '../components/ui/scroll-up/ScrollUp.astro';
@@ -45,6 +46,13 @@ const websiteSchema = {
     <link rel="icon" href={faviconHref} type="image/svg+xml" />
     <link rel="sitemap" type="application/xml" href={sitemapHref} />
 
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;1,9..40,400&display=swap"
+      rel="stylesheet"
+    />
+
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content={SITE_NAME} />
     <meta property="og:title" content={title} />
@@ -58,11 +66,14 @@ const websiteSchema = {
     <meta name="twitter:image" content={ogImageUrl} />
 
     <script
+      is:inline
       type="application/ld+json"
       set:html={JSON.stringify(websiteSchema)}
     />
   </head>
   <body>
+    <div set:html={spriteSvg} hidden aria-hidden="true" />
+
     <Header />
 
     <slot />
