@@ -1,6 +1,6 @@
 import { getFilters } from '../../api/filters.api.js';
 import { getState, setState } from '../../services/store.service.js';
-import { LOADER } from '../../utils/constants.js';
+import { DEFAULT_FILTER, LOADER } from '../../utils/constants.js';
 import { renderCategoryCard } from '../category-card/render-category-card.js';
 import { createListStatus } from '../shared/list-status.js';
 import { bindStoreIsland } from '../shared/store-island.js';
@@ -107,6 +107,31 @@ export function initCategoryList(root) {
 
   /** @type {string} */
   let lastKey = '';
+
+  const { activeFilter, category, page } = getState();
+  const hasSsrCards =
+    root.dataset.hydrated === 'false' &&
+    Boolean(root.querySelector('.category-card'));
+
+  if (
+    hasSsrCards &&
+    category === null &&
+    activeFilter === DEFAULT_FILTER &&
+    page === 1
+  ) {
+    lastKey = `${activeFilter}:${page}`;
+
+    const ssrTotalPages = Number(root.dataset.totalPages);
+
+    if (
+      Number.isFinite(ssrTotalPages) &&
+      ssrTotalPages !== getState().totalPages
+    ) {
+      setState({ totalPages: ssrTotalPages });
+    }
+  }
+
+  root.dataset.hydrated = 'true';
 
   const onClick = (/** @type {Event} */ event) => {
     const target = /** @type {HTMLElement} */ (event.target);

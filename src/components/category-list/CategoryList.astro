@@ -1,5 +1,53 @@
-<ul class="category-list" data-component="category-list" aria-live="polite">
-</ul>
+---
+import { getFilters } from '../../api/filters.api.js';
+import { DEFAULT_FILTER, PAGE_LIMIT } from '../../utils/constants.js';
+import { renderCategoryCard } from '../category-card/render-category-card.js';
+
+interface CategoryItem {
+  name?: unknown;
+  filter?: unknown;
+  imgURL?: unknown;
+}
+
+let categories: CategoryItem[] = [];
+let totalPages = 1;
+
+try {
+  const data = await getFilters({
+    filter: DEFAULT_FILTER,
+    page: 1,
+    limit: PAGE_LIMIT.CATEGORIES,
+  });
+
+  categories = data.results;
+  totalPages = data.totalPages;
+} catch (err) {
+  console.error(
+    '[build] CategoryList: getFilters failed, shipping empty grid',
+    err,
+  );
+}
+
+const html = categories
+  .map((item) =>
+    renderCategoryCard({
+      name: String(item.name ?? ''),
+      filter: String(item.filter ?? ''),
+      imgURL: String(item.imgURL ?? ''),
+      caption: DEFAULT_FILTER,
+    }),
+  )
+  .join('');
+---
+
+<ul
+  class="category-list"
+  data-component="category-list"
+  data-hydrated="false"
+  data-total-pages={String(totalPages)}
+  aria-live="polite"
+  set:html={html}
+/>
 
 <script>
   import { initCategoryList } from './category-list.client.js';

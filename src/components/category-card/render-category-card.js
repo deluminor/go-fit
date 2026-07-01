@@ -14,6 +14,7 @@ export function renderCategoryCard({ name, filter, imgURL, caption }) {
         class="category-card"
         data-name="${escapeHtml(name)}"
         data-filter="${escapeHtml(filter)}"
+        aria-label="${escapeHtml(name)} exercises"
         style="--card-image: url('${safeUrl}')"
       >
         <span class="category-card__name">${escapeHtml(name)}</span>
