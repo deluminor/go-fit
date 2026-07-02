@@ -5,9 +5,13 @@
 .modal[data-modal='rating'] {
   .modal__dialog {
     width: min(430px, 92vw);
-    padding: 40px;
+    padding: 40px 20px;
     color: $color-on-media;
     background-color: $color-text;
+
+    @include respond($bp-tablet) {
+      padding: 40px;
+    }
   }
 
   .modal__close {
