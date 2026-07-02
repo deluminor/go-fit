@@ -1,1 +1,170 @@
 @use '../../styles/abstracts' as *;
+
+.header {
+  position: relative;
+  padding-block: 16px;
+}
+
+.header__inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.header__logo {
+  display: inline-flex;
+  color: $color-heading;
+  flex-shrink: 0;
+}
+
+.header__nav {
+  display: none;
+}
+
+.nav {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 8px;
+  width: 233px;
+  background: $color-heading;
+  border-radius: 60px;
+}
+
+.nav__link {
+  padding: 6px 12px;
+  border-radius: 30px;
+  color: $color-on-media;
+  font-weight: $font-weight-regular;
+  transition:
+    color $transition,
+    background-color $transition;
+
+  &--active {
+    background: $color-bg;
+    color: $color-heading;
+  }
+}
+
+.socials {
+  display: flex;
+  gap: 12px;
+  flex-shrink: 0;
+}
+
+.socials__link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border: 1px solid $color-border;
+  border-radius: 10px;
+  transition:
+    background-color $transition,
+    color $transition;
+
+  &:hover {
+    background-color: rgba(36, 36, 36, 0.8);
+    color: $color-on-media;
+  }
+}
+
+.header__socials {
+  display: none;
+  justify-self: end;
+  color: $color-heading;
+}
+
+.header__burger {
+  display: inline-flex;
+  justify-self: end;
+  color: $color-heading;
+}
+
+.mobile-menu {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: none;
+  flex-direction: column;
+  gap: 24px;
+  padding: 24px 20px;
+  background: $color-heading;
+  color: $color-on-media;
+  min-height: 100dvh;
+  overflow-y: auto;
+
+  &--open {
+    display: flex;
+  }
+}
+
+.mobile-menu__close {
+  align-self: flex-end;
+  color: $color-on-media;
+}
+
+.mobile-menu__list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  font-size: 24px;
+  text-align: center;
+}
+
+.mobile-menu__link--active {
+  font-weight: $font-weight-medium;
+}
+
+.mobile-menu__socials {
+  margin-top: auto;
+  color: $color-on-media;
+}
+
+.mobile-menu .socials__link {
+  border-color: rgba(244, 244, 244, 0.15);
+  background-color: transparent;
+  color: rgba(244, 244, 244, 0.85);
+
+  &:hover,
+  &:active,
+  &:focus-visible {
+    background-color: $color-bg;
+    border-color: $color-bg;
+    color: $color-heading;
+  }
+}
+
+@include respond($bp-tablet) {
+  .header__inner {
+    position: relative;
+  }
+
+  .header__nav {
+    display: block;
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+  }
+
+  .header__socials {
+    display: flex;
+  }
+
+  .header__burger {
+    display: none;
+  }
+}
+
+@include respond($bp-desktop) {
+  .nav {
+    width: 265px;
+    gap: 12px;
+  }
+}

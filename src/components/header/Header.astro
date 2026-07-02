@@ -1,6 +1,189 @@
+---
+import { NAV_ITEMS } from '../../constants/navigation';
+import { withBase } from '../../utils/withBase';
+import { isNavActive } from '../../utils/isNavActive';
+
+const SOCIALS = [
+  {
+    name: 'Facebook',
+    href: 'https://www.facebook.com/goITclub/',
+    icon: 'icon-facebook',
+  },
+  {
+    name: 'Instagram',
+    href: 'https://www.instagram.com/goitclub/',
+    icon: 'icon-instagram',
+  },
+  {
+    name: 'YouTube',
+    href: 'https://www.youtube.com/c/GoIT',
+    icon: 'icon-youtube',
+  },
+];
+
+interface Props {
+  currentPath: string;
+}
+
+const { currentPath } = Astro.props as Props;
+const homeHref = withBase(NAV_ITEMS[0].path);
+const favoritesHref = withBase(NAV_ITEMS[1].path);
+const isFavorites = isNavActive('favorites', currentPath);
+---
+
 <header class="header">
-  <div class="container" data-component="header">
-    <div class="placeholder">Header</div>
+  <div class="container header__inner" data-component="header">
+    <a class="header__logo" href={homeHref} aria-label="Your Energy — home">
+      <svg
+        width="132"
+        height="24"
+        viewBox="0 0 132 24"
+        fill="currentColor"
+        aria-hidden="true"
+      >
+        <use href="#icon-logo"></use>
+      </svg>
+    </a>
+
+    <nav class="header__nav" aria-label="Main">
+      <ul class="nav">
+        {
+          NAV_ITEMS.map(({ label, path }) => {
+            const href = withBase(path);
+            const isActive = isNavActive(path, currentPath);
+
+            return (
+              <li>
+                <a
+                  class:list={['nav__link', { 'nav__link--active': isActive }]}
+                  href={href}
+                  aria-current={isActive ? 'page' : undefined}
+                >
+                  {label}
+                </a>
+              </li>
+            );
+          })
+        }
+      </ul>
+    </nav>
+
+    <ul class="socials header__socials">
+      {
+        SOCIALS.map((social) => (
+          <li>
+            <a
+              class="socials__link"
+              href={social.href}
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label={social.name}
+            >
+              <svg
+                class="socials__icon"
+                width="24"
+                height="24"
+                viewBox="0 0 32 32"
+                fill="currentColor"
+                aria-hidden="true"
+              >
+                <use href={`#${social.icon}`} />
+              </svg>
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+
+    <button
+      class="header__burger"
+      type="button"
+      aria-label="Open menu"
+      aria-expanded="false"
+      aria-controls="mobile-menu"
+      data-menu-open
+    >
+      <svg
+        width="32"
+        height="32"
+        viewBox="0 0 32 32"
+        fill="none"
+        stroke="currentColor"
+        aria-hidden="true"
+      >
+        <use href="#icon-burger"></use>
+      </svg>
+    </button>
+
+    <div class="mobile-menu" id="mobile-menu" data-menu>
+      <button
+        class="mobile-menu__close"
+        type="button"
+        aria-label="Close menu"
+        data-menu-close
+      >
+        <svg
+          width="32"
+          height="32"
+          viewBox="0 0 32 32"
+          fill="none"
+          stroke="currentColor"
+          aria-hidden="true"
+        >
+          <use href="#icon-close"></use>
+        </svg>
+      </button>
+
+      <nav aria-label="Mobile">
+        <ul class="mobile-menu__list">
+          <li>
+            <a
+              class:list={[
+                'mobile-menu__link',
+                { 'mobile-menu__link--active': !isFavorites },
+              ]}
+              href={homeHref}>Home</a
+            >
+          </li>
+          <li>
+            <a
+              class:list={[
+                'mobile-menu__link',
+                { 'mobile-menu__link--active': isFavorites },
+              ]}
+              href={favoritesHref}>Favorites</a
+            >
+          </li>
+        </ul>
+      </nav>
+
+      <ul class="socials mobile-menu__socials">
+        {
+          SOCIALS.map((social) => (
+            <li>
+              <a
+                class="socials__link"
+                href={social.href}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label={social.name}
+              >
+                <svg
+                  class="socials__icon"
+                  width="24"
+                  height="24"
+                  viewBox="0 0 32 32"
+                  fill="currentColor"
+                  aria-hidden="true"
+                >
+                  <use href={`#${social.icon}`} />
+                </svg>
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
   </div>
 </header>
 
