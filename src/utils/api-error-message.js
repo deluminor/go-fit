@@ -20,7 +20,16 @@ export function extractApiMessage(data) {
 }
 
 /**
- * @param {import('axios').AxiosError} error
+ * Minimal Axios error shape used for user-facing message resolution.
+ * @typedef {object} AxiosLikeError
+ * @property {{ status?: number, data?: unknown }=} response
+ * @property {string=} code
+ */
+
+/**
+ * Maps an Axios-like error to a safe user-facing message.
+ * Prefers API-provided `message` when present.
+ * @param {AxiosLikeError} error
  * @returns {string}
  */
 export function resolveAxiosErrorMessage(error) {
@@ -32,7 +41,9 @@ export function resolveAxiosErrorMessage(error) {
     const { status } = error.response;
 
     if (status === 404) return 'Not found. Please try again.';
-    if (status >= 500) return 'Server error. Please try later.';
+    if (typeof status === 'number' && status >= 500) {
+      return 'Server error. Please try later.';
+    }
 
     return 'Request failed. Please check your input.';
   }
