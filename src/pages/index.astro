@@ -6,10 +6,10 @@ import ExerciseList from '../components/exercise-list/ExerciseList.astro';
 import Filters from '../components/filters/Filters.astro';
 import Hero from '../components/hero/Hero.astro';
 import Pagination from '../components/pagination/Pagination.astro';
+import PhotoCard from '../components/photo-card/PhotoCard.astro';
 import Quote from '../components/quote/Quote.astro';
 import Search from '../components/search/Search.astro';
 import BaseLayout from '../layouts/BaseLayout.astro';
-import PhotoCard from '../components/photo-card/PhotoCard.astro';
 
 const title = 'Your Energy';
 const description =
@@ -119,9 +119,6 @@ const description =
       gap: 20px;
       width: 100%;
 
-      // ==========================================
-      // ЗОНА МОБІЛКИ
-      // ==========================================
       &-quote,
       &-norm,
       &-photo {
@@ -131,15 +128,12 @@ const description =
       }
 
       &-photo {
-        width: 100%; // було: max-width: 335px; height: 242px; margin-inline: auto;
+        width: 100%;
         margin-inline: auto;
         display: block;
         flex-shrink: 0;
       }
 
-      // ==========================================
-      // ЗОНА ПЛАНШЕТА
-      // ==========================================
       @include respond($bp-tablet) {
         display: grid;
         grid-template-columns: 1fr 288px;
@@ -174,9 +168,6 @@ const description =
         }
       }
 
-      // ==========================================
-      // ЗОНА ДЕСКТОПА ($bp-desktop)
-      // ==========================================
       @include respond($bp-desktop) {
         order: unset;
         display: flex;
