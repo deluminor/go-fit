@@ -1,21 +1,17 @@
-/**
- * @param {unknown} data
- * @param {string} label
- * @returns {Record<string, unknown>}
- */
-function assertObject(data, label) {
+import type { PaginatedResponse } from '@/types/pagination.ts';
+import type { Quote } from '@/types/quote.ts';
+
+function assertObject(data: unknown, label: string): Record<string, unknown> {
   if (!data || typeof data !== 'object' || Array.isArray(data)) {
     throw new Error(`API: invalid ${label} response`);
   }
 
-  return /** @type {Record<string, unknown>} */ (data);
+  return data as Record<string, unknown>;
 }
 
-/**
- * @param {unknown} data
- * @returns {{ results: object[], totalPages: number, page: number }}
- */
-export function normalizePaginated(data) {
+export function normalizePaginated<T = Record<string, unknown>>(
+  data: unknown,
+): PaginatedResponse<T> {
   const body = assertObject(data, 'paginated');
   const { results, totalPages, page } = body;
 
@@ -34,17 +30,13 @@ export function normalizePaginated(data) {
   }
 
   return {
-    results,
+    results: results as T[],
     totalPages: normalizedTotalPages,
     page: normalizedPage,
   };
 }
 
-/**
- * @param {unknown} data
- * @returns {{ author: string, quote: string }}
- */
-export function normalizeQuote(data) {
+export function normalizeQuote(data: unknown): Quote {
   const body = assertObject(data, 'quote');
   const { author, quote } = body;
 
@@ -55,10 +47,8 @@ export function normalizeQuote(data) {
   return { author, quote };
 }
 
-/**
- * @param {unknown} data
- * @returns {object}
- */
-export function normalizeEntity(data) {
-  return assertObject(data, 'entity');
+export function normalizeEntity<T extends object = Record<string, unknown>>(
+  data: unknown,
+): T {
+  return assertObject(data, 'entity') as T;
 }

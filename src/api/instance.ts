@@ -1,18 +1,18 @@
+import { API_EVENT } from '@/constants/api-events.ts';
+import { API_BASE_URL } from '@/constants/api.ts';
+import { LOADER, type LoaderType } from '@/constants/loaders.ts';
+import type { AxiosLikeError } from '@/types/api.ts';
+import { resolveAxiosErrorMessage } from '@/utils/api-error-message.ts';
+import { emitApiEvent } from '@/utils/api-events.ts';
+import type { InternalAxiosRequestConfig } from 'axios';
 import axios from 'axios';
-import { resolveAxiosErrorMessage } from '../utils/api-error-message.js';
-import { emitApiEvent } from '../utils/api-events.js';
-import { API_BASE_URL, API_EVENT, LOADER } from '../utils/constants.js';
 
 export const http = axios.create({
   baseURL: API_BASE_URL,
-  timeout: 15000,
+  timeout: 15_000,
 });
 
-/**
- * @param {import('axios').InternalAxiosRequestConfig} [config]
- * @returns {string}
- */
-function loaderMode(config) {
+function loaderMode(config?: InternalAxiosRequestConfig): LoaderType | string {
   return config?.meta?.loader ?? LOADER.GLOBAL;
 }
 
@@ -26,7 +26,7 @@ http.interceptors.response.use(
     emitApiEvent(API_EVENT.LOADER_HIDE, loaderMode(response.config));
     return response;
   },
-  (error) => {
+  (error: AxiosLikeError & { config?: InternalAxiosRequestConfig }) => {
     emitApiEvent(API_EVENT.LOADER_HIDE, loaderMode(error.config));
     emitApiEvent(API_EVENT.NOTIFY_ERROR, resolveAxiosErrorMessage(error));
     return Promise.reject(error);
