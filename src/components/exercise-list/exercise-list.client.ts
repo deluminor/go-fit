@@ -79,8 +79,7 @@ async function loadExercises(root: HTMLElement): Promise<void> {
     if (current.page !== responsePage) patch.page = responsePage;
 
     if (Object.keys(patch).length > 0) setState(patch);
-  } catch (error) {
-    console.error('exercise-list: failed to load exercises', error);
+  } catch {
     status.renderEmpty(root, 'Failed to load exercises.');
   } finally {
     if (inflightKey === requestKey) inflightKey = null;

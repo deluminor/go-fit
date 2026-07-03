@@ -22,12 +22,7 @@ try {
 
   categories = data.results;
   totalPages = data.totalPages;
-} catch (err) {
-  console.error(
-    '[build] CategoryList: getFilters failed, shipping empty grid',
-    err,
-  );
-}
+} catch {}
 
 const html = categories
   .map((item) =>

@@ -27,7 +27,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       ASTRO_TELEMETRY_DISABLED: 1
-      ASTRO_BASE: /your-energy
+      ASTRO_BASE: /go-fit
     steps:
       - name: Checkout
         uses: actions/checkout@v4

@@ -45,7 +45,6 @@ async function setup({
 }: SetupOptions = {}): Promise<void> {
   localStorage.clear();
   vi.resetModules();
-  vi.spyOn(console, 'error').mockImplementation(() => {});
 
   const api = await import(FILTERS_API_PATH);
   getFiltersMock = vi.mocked(api.getFilters);
@@ -96,13 +95,12 @@ describe('category-list island', () => {
     expect(root.querySelector('.category-card')).toBeNull();
   });
 
-  it('shows a failure state and logs when the request rejects', async () => {
+  it('shows a failure state when the request rejects', async () => {
     await setup({ reject: new Error('network down') });
 
     await vi.waitFor(() => {
       expect(root.textContent).toContain('Failed to load categories.');
     });
-    expect(console.error).toHaveBeenCalled();
   });
 
   it('stores the selected category when a card is clicked', async () => {

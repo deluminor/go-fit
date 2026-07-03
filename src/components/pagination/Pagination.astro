@@ -11,12 +11,7 @@ try {
   const data = await getFilters({ filter: DEFAULT_FILTER, page: INITIAL_PAGE });
 
   totalPages = data.totalPages;
-} catch (error) {
-  console.error(
-    '[build] Pagination: getFilters failed, shipping hidden pagination',
-    error,
-  );
-}
+} catch {}
 
 const isHidden = totalPages <= 1;
 const html = isHidden

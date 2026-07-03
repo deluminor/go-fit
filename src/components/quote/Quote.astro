@@ -10,9 +10,7 @@ let quoteData = FALLBACK_QUOTE;
 
 try {
   quoteData = await getQuote();
-} catch (error) {
-  console.error('[build] Quote: getQuote failed, using fallback', error);
-}
+} catch {}
 ---
 
 <div class="quote" data-component="quote">

@@ -67,11 +67,14 @@ export async function initQuote(root: HTMLElement | null): Promise<void> {
     return;
   }
 
-  try {
-    const { quote, author } = await getQuote({ loader: LOADER.SILENT });
-    renderQuote(root, quote, author);
-    writeJSON(STORAGE_KEYS.QUOTE, { date: today, quote, author });
-  } catch (error) {
-    console.error('quote: failed to load quote', error);
-  }
+  const data = await getQuote({ loader: LOADER.SILENT }).catch(() => null);
+
+  if (!data) return;
+
+  renderQuote(root, data.quote, data.author);
+  writeJSON(STORAGE_KEYS.QUOTE, {
+    date: today,
+    quote: data.quote,
+    author: data.author,
+  });
 }

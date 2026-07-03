@@ -1,9 +1,9 @@
 {
-  "name": "your-energy",
+  "name": "go-fit",
   "version": "0.1.0",
   "private": true,
   "type": "module",
-  "description": "Your Energy — adaptive fitness exercises catalog. Team project for the MSc in Software Engineering & AI at Neoversity (GoIT), vanilla stack.",
+  "description": "Go Fit — adaptive fitness exercises catalog. Team project for the MSc in Software Engineering & AI at Neoversity (GoIT), vanilla stack.",
   "engines": {
     "node": ">=22.12.0"
   },

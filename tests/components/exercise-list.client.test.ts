@@ -63,7 +63,6 @@ async function setup({
 }: SetupOptions = {}): Promise<void> {
   localStorage.clear();
   vi.resetModules();
-  vi.spyOn(console, 'error').mockImplementation(() => {});
 
   const api = await import(EXERCISES_API_PATH);
   getExercisesMock = vi.mocked(api.getExercises);
@@ -126,13 +125,12 @@ describe('exercise-list island', () => {
     expect(root.querySelector('.exercise-card')).toBeNull();
   });
 
-  it('shows a failure state and logs when the request rejects', async () => {
+  it('shows a failure state when the request rejects', async () => {
     await setup({ reject: new Error('network down') });
 
     await vi.waitFor(() => {
       expect(root.textContent).toContain('Failed to load exercises.');
     });
-    expect(console.error).toHaveBeenCalled();
   });
 
   it('reloads when the keyword changes', async () => {

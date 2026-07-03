@@ -187,9 +187,7 @@ export async function openExerciseModal(
     bindExerciseModalActions(exerciseData, exerciseId, options);
 
     return close;
-  } catch (error) {
-    console.error('Failed to load exercise:', error);
-
+  } catch {
     const host = document.querySelector('[data-component="exercise-modal"]');
     if (!host) return close;
 

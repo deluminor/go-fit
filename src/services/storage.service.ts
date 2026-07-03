@@ -27,8 +27,7 @@ export function readJSON<T>(key: string, fallback: T): T {
     }
 
     return value;
-  } catch (error) {
-    console.error(`storage: failed to read "${key}"`, error);
+  } catch {
     return fallback;
   }
 }
@@ -40,7 +39,7 @@ export function writeJSON(key: string, value: unknown): void {
     if (key === STORAGE_KEYS.UI_STATE) {
       writeUiStateToUrl(value);
     }
-  } catch (error) {
-    console.error(`storage: failed to write "${key}"`, error);
+  } catch {
+    void 0;
   }
 }

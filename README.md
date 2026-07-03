@@ -1,4 +1,4 @@
-# Your Energy
+# Go Fit
 
 > Adaptive fitness-exercise catalog with filtering, favorites, detail modals, ratings, and a newsletter subscription. Team project for the **MSc in Software Engineering & AI**, built with **Astro** and **TypeScript**.
 
@@ -86,7 +86,7 @@ npm run dev        # Astro dev server → http://localhost:4321
 ## Project Structure
 
 ```
-your-energy/
+go-fit/
 ├── public/                  # static assets served as-is (favicon, og-image, robots.txt)
 ├── tests/                   # Vitest suite (*.test.ts) + setup.ts
 ├── .github/                 # CI + deploy workflows + CODEOWNERS
@@ -492,7 +492,7 @@ Deployed to **GitHub Pages** by the [`deploy.yml`](.github/workflows/deploy.yml)
 
 Enable **Settings → Pages → Build and deployment → Source: GitHub Actions** once in the repository.
 
-`site` and `base` are configured in [`astro.config.mjs`](astro.config.mjs): `site: https://deluminor.github.io`, `base: /your-energy`. For a different repo name or a custom domain, override the base via the `ASTRO_BASE` env var (e.g. `ASTRO_BASE=/` for a root/custom-domain deploy).
+`site` and `base` are configured in [`astro.config.mjs`](astro.config.mjs): `site: https://deluminor.github.io`, `base: /go-fit`. For a different repo name or a custom domain, override the base via the `ASTRO_BASE` env var (e.g. `ASTRO_BASE=/` for a root/custom-domain deploy).
 
 ## Contributing
 

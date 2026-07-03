@@ -82,8 +82,7 @@ async function loadCategories(root: HTMLElement): Promise<void> {
     if (current.page !== responsePage) patch.page = responsePage;
 
     if (Object.keys(patch).length > 0) setState(patch);
-  } catch (error) {
-    console.error('category-list: failed to load categories', error);
+  } catch {
     status.renderEmpty(root, 'Failed to load categories.');
   } finally {
     if (inflightKey === requestKey) inflightKey = null;

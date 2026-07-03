@@ -6,7 +6,6 @@ const KEY = 'test:key';
 describe('storage.service', () => {
   beforeEach(() => {
     localStorage.clear();
-    vi.spyOn(console, 'error').mockImplementation(() => {});
   });
 
   afterEach(() => {
@@ -22,14 +21,13 @@ describe('storage.service', () => {
     expect(readJSON('missing:key', 'fallback')).toBe('fallback');
   });
 
-  it('returns fallback and logs when stored JSON is corrupt', () => {
+  it('returns fallback when stored JSON is corrupt', () => {
     localStorage.setItem(KEY, '{not valid json');
 
     expect(readJSON(KEY, [])).toEqual([]);
-    expect(console.error).toHaveBeenCalledOnce();
   });
 
-  it('swallows write failures (e.g. quota exceeded) and logs', () => {
+  it('swallows write failures (e.g. quota exceeded)', () => {
     const spy = vi
       .spyOn(Storage.prototype, 'setItem')
       .mockImplementation(() => {
@@ -37,7 +35,6 @@ describe('storage.service', () => {
       });
 
     expect(() => writeJSON(KEY, { big: 'payload' })).not.toThrow();
-    expect(console.error).toHaveBeenCalledOnce();
 
     spy.mockRestore();
   });
