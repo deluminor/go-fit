@@ -1,34 +1,25 @@
-import { SPRITE_ICON, renderSpriteIcon } from '../../../utils/sprite-icon.js';
+import { SPRITE_ICON, renderSpriteIcon } from '@/utils/sprite-icon.ts';
 
 const ROOT_ID = 'modal-root';
 const FOCUSABLE_SELECTOR =
   'a[href], button:not([disabled]), textarea, input:not([disabled]), select:not([disabled]), [tabindex]:not([tabindex="-1"])';
 
-/** @type {null | (() => void)} */
-let activeClose = null;
+let activeClose: (() => void) | null = null;
 
-/**
- * Centralized modal shell. Renders the backdrop + dialog + close button into
- * `#modal-root` and handles the full accessibility lifecycle:
- * - closes on the X button, backdrop click, and Escape;
- * - locks body scroll while open and restores it on close;
- * - moves focus into the dialog, traps Tab/Shift+Tab inside it, and returns
- *   focus to the element that was focused before opening;
- * - removes its listeners on close.
- *
- * Opening a modal while another is open closes the first (e.g. the rating modal
- * opening over the exercise modal). Feature modals only provide their inner
- * `content` — no shell duplication.
- *
- * @param {object} options
- * @param {string} options.name - modal id for the `data-modal` attribute
- * @param {string} [options.label] - accessible name for the dialog (`aria-label`)
- * @param {string} [options.content] - inner HTML of the dialog body (pre-escaped by the caller)
- * @param {() => void} [options.onClose] - callback fired after the modal closes
- * @returns {() => void} close function
- */
-export function openModal({ name, label, content = '', onClose }) {
-  const root = /** @type {HTMLElement} */ (document.getElementById(ROOT_ID));
+export interface OpenModalOptions {
+  name: string;
+  label?: string;
+  content?: string;
+  onClose?: () => void;
+}
+
+export function openModal({
+  name,
+  label,
+  content = '',
+  onClose,
+}: OpenModalOptions): () => void {
+  const root = document.getElementById(ROOT_ID);
   if (!root) return () => {};
 
   const previouslyFocused = document.activeElement;
@@ -52,24 +43,21 @@ export function openModal({ name, label, content = '', onClose }) {
       </div>
     </div>`;
 
-  const dialog = /** @type {HTMLElement} */ (
-    root.querySelector('.modal__dialog')
-  );
+  const dialog = root.querySelector('.modal__dialog') as HTMLElement;
+  if (!dialog) return () => {};
+
   if (label) dialog.setAttribute('aria-label', label);
 
   const previousOverflow = document.body.style.overflow;
   document.body.style.overflow = 'hidden';
+  const modalRoot = root;
 
-  /** @returns {HTMLElement[]} visible, tabbable elements inside the dialog */
-  function getFocusable() {
-    const nodes = /** @type {NodeListOf<HTMLElement>} */ (
-      dialog.querySelectorAll(FOCUSABLE_SELECTOR)
-    );
+  function getFocusable(): HTMLElement[] {
+    const nodes = dialog.querySelectorAll<HTMLElement>(FOCUSABLE_SELECTOR);
     return Array.from(nodes).filter((el) => el.offsetParent !== null);
   }
 
-  /** @param {KeyboardEvent} event */
-  function trapFocus(event) {
+  function trapFocus(event: KeyboardEvent): void {
     const items = getFocusable();
 
     if (items.length === 0) {
@@ -91,8 +79,7 @@ export function openModal({ name, label, content = '', onClose }) {
     }
   }
 
-  /** @param {KeyboardEvent} event */
-  function onKeydown(event) {
+  function onKeydown(event: KeyboardEvent): void {
     if (event.key === 'Escape') {
       close();
       return;
@@ -101,10 +88,10 @@ export function openModal({ name, label, content = '', onClose }) {
     if (event.key === 'Tab') trapFocus(event);
   }
 
-  function close() {
+  function close(): void {
     document.removeEventListener('keydown', onKeydown);
     document.body.style.overflow = previousOverflow;
-    root.innerHTML = '';
+    modalRoot.innerHTML = '';
     activeClose = null;
 
     if (previouslyFocused instanceof HTMLElement) previouslyFocused.focus();
@@ -123,6 +110,6 @@ export function openModal({ name, label, content = '', onClose }) {
   return close;
 }
 
-export function closeModal() {
+export function closeModal(): void {
   if (activeClose) activeClose();
 }

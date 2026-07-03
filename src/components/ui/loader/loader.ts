@@ -1,40 +1,23 @@
-import { LOADER } from '../../../utils/constants.js';
+import { LOADER } from '@/constants/loaders.ts';
 
 const GLOBAL_KEY = '__global__';
 
-/** @type {Map<string, number>} */
-const counters = new Map();
+const counters = new Map<string, number>();
+const overlays = new Map<string, HTMLElement>();
 
-/** @type {Map<string, HTMLElement>} */
-const overlays = new Map();
-
-/**
- * Resolves a stable cache key for loader state.
- * Local loaders use the CSS selector string, not the DOM node reference.
- * @param {string | undefined} mode
- * @returns {string | null}
- */
-function resolveKey(mode) {
+function resolveKey(mode: string | undefined): string | null {
   if (!mode || mode === LOADER.GLOBAL) return GLOBAL_KEY;
   if (mode === LOADER.SILENT) return null;
 
   return mode;
 }
 
-/**
- * @param {string} key
- * @returns {HTMLElement | null}
- */
-function getHostElement(key) {
+function getHostElement(key: string): HTMLElement | null {
   if (key === GLOBAL_KEY) return null;
   return document.querySelector(key);
 }
 
-/**
- * @param {boolean} isGlobal
- * @returns {HTMLElement}
- */
-function createOverlay(isGlobal) {
+function createOverlay(isGlobal: boolean): HTMLElement {
   const el = document.createElement('div');
 
   el.className = `loader ${isGlobal ? 'loader--global' : 'loader--local'}`;
@@ -44,10 +27,7 @@ function createOverlay(isGlobal) {
   return el;
 }
 
-/**
- * @param {string} key
- */
-function mount(key) {
+function mount(key: string): void {
   const isGlobal = key === GLOBAL_KEY;
   let overlay = overlays.get(key);
 
@@ -80,10 +60,7 @@ function mount(key) {
   overlay.classList.add('loader--visible');
 }
 
-/**
- * @param {string} key
- */
-function unmount(key) {
+function unmount(key: string): void {
   const overlay = overlays.get(key);
   if (!overlay) return;
 
@@ -99,10 +76,7 @@ function unmount(key) {
   overlays.delete(key);
 }
 
-/**
- * @param {string | undefined} mode
- */
-export function showLoader(mode) {
+export function showLoader(mode?: string): void {
   const key = resolveKey(mode);
   if (key === null) return;
 
@@ -110,10 +84,7 @@ export function showLoader(mode) {
   mount(key);
 }
 
-/**
- * @param {string | undefined} mode
- */
-export function hideLoader(mode) {
+export function hideLoader(mode?: string): void {
   const key = resolveKey(mode);
   if (key === null) return;
 

@@ -1,12 +1,7 @@
 const VISIBLE_CLASS = 'scroll-up--visible';
 const SHOW_AFTER_PX = 320;
 
-/**
-
- * @param {HTMLElement | null} root
- * @returns {void}
- */
-export function initScrollUp(root) {
+export function initScrollUp(root: HTMLElement | null): void {
   if (!root) return;
 
   const toggleVisibility = () => {
