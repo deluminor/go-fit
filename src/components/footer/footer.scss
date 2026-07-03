@@ -1,1 +1,378 @@
 @use '../../styles/abstracts' as *;
+
+.footer {
+  background-color: $color-text;
+  color: $color-on-media;
+
+  &__container {
+    display: flex;
+    flex-direction: column;
+
+    min-height: rem(590);
+    padding-top: rem(40);
+    padding-bottom: rem(10);
+  }
+
+  &__top {
+    display: flex;
+    flex-direction: column;
+  }
+
+  &__promo {
+    display: flex;
+    flex-direction: column;
+  }
+
+  &__brand {
+    display: flex;
+    flex-direction: column;
+    gap: rem(20);
+    margin-bottom: rem(40);
+  }
+
+  &__logo {
+    display: inline-flex;
+    width: fit-content;
+    color: currentColor;
+  }
+
+  &__logo-icon {
+    width: rem(132);
+    height: rem(24);
+    fill: currentColor;
+  }
+
+  &__socials {
+    display: flex;
+    gap: rem(12);
+  }
+
+  &__social-link {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: rem(40);
+    height: rem(40);
+    color: currentColor;
+    border: 1px solid rgba(244, 244, 244, 0.1);
+    border-radius: rem(10);
+    cursor: pointer;
+
+    transition:
+      color 250ms ease,
+      background-color 250ms ease,
+      border-color 250ms ease;
+
+    &:hover,
+    &:focus-visible {
+      color: $color-text;
+      background-color: $color-on-media;
+      border-color: $color-on-media;
+      outline: none;
+    }
+  }
+
+  &__social-icon {
+    width: rem(24);
+    height: rem(24);
+    fill: currentColor;
+  }
+
+  &__title {
+    max-width: rem(335);
+    margin: 0 0 rem(20);
+    font-weight: 400;
+    font-size: rem(38);
+    line-height: 1.16;
+    letter-spacing: -0.02em;
+  }
+
+  &__subscribe {
+    width: 100%;
+    max-width: rem(335);
+  }
+
+  &__subscribe-text {
+    margin: 0 0 rem(20);
+    font-size: rem(14);
+    line-height: 1.29;
+    letter-spacing: -0.02em;
+    white-space: nowrap;
+  }
+
+  &__form {
+    display: flex;
+    flex-direction: column;
+    gap: rem(20);
+  }
+
+  &__input,
+  &__button {
+    width: 100%;
+    height: rem(42);
+    border-radius: rem(30);
+    font-size: rem(14);
+  }
+
+  &__input {
+    padding: 0 rem(14);
+    color: $color-on-media;
+    background-color: transparent;
+    border: 1px solid $color-on-media;
+
+    transition:
+      border-color 250ms ease,
+      box-shadow 250ms ease;
+
+    &:focus,
+    &:focus-visible {
+      outline: none;
+      border-color: $color-on-media;
+      box-shadow: 0 0 0 1px $color-on-media;
+    }
+  }
+
+  &__input::placeholder {
+    color: rgba(244, 244, 244, 0.6);
+  }
+
+  &__button {
+    color: $color-text;
+    background-color: $color-on-media;
+    border: 1px solid transparent;
+    cursor: pointer;
+
+    transition:
+      color 250ms ease,
+      background-color 250ms ease,
+      border-color 250ms ease;
+
+    &:not(:disabled):hover,
+    &:not(:disabled):focus-visible {
+      color: $color-on-media;
+      background-color: transparent;
+      border-color: $color-on-media;
+      outline: none;
+    }
+
+    &--loading {
+      position: relative;
+      color: transparent !important;
+      pointer-events: none;
+
+      &::after {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 18px;
+        height: 18px;
+        margin: -9px 0 0 -9px;
+        border: 2px solid rgba($color-text, 0.3);
+        border-top-color: $color-text;
+        border-radius: 50%;
+        animation: loader-spin 0.7s linear infinite;
+      }
+    }
+  }
+
+  &__bottom {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    grid-template-areas:
+      'copyright copyright'
+      'policy year';
+    row-gap: rem(10);
+
+    margin-top: auto;
+    padding-right: rem(52);
+
+    font-size: rem(14);
+    line-height: 1.29;
+  }
+
+  &__copyright {
+    grid-area: copyright;
+    margin: 0;
+  }
+
+  &__policy {
+    grid-area: policy;
+    display: flex;
+    gap: rem(8);
+  }
+
+  &__policy-link {
+    color: currentColor;
+    text-decoration: none;
+  }
+
+  &__year {
+    grid-area: year;
+    justify-self: end;
+    margin: 0;
+    white-space: nowrap;
+    transform: none;
+  }
+
+  @include respond($bp-tablet) {
+    &__container {
+      min-height: rem(534);
+      padding-top: rem(64);
+      padding-bottom: rem(16);
+    }
+
+    &__top {
+      display: grid;
+      grid-template-columns: rem(156) 1fr;
+      grid-template-areas: 'brand promo';
+      column-gap: rem(32);
+      align-items: start;
+    }
+
+    &__brand {
+      grid-area: brand;
+      gap: rem(32);
+      margin-bottom: 0;
+    }
+
+    &__promo {
+      grid-area: promo;
+      justify-self: end;
+      width: rem(430);
+      gap: rem(32);
+    }
+
+    &__title {
+      width: 100%;
+      max-width: none;
+      margin: 0;
+      font-size: rem(56);
+      line-height: 1.07;
+      letter-spacing: -0.02em;
+    }
+
+    &__subscribe {
+      width: 100%;
+      max-width: none;
+    }
+
+    &__social-item,
+    &__social-link {
+      width: rem(44);
+      height: rem(44);
+    }
+
+    &__social-icon {
+      width: rem(28);
+      height: rem(28);
+    }
+
+    &__input,
+    &__button {
+      height: rem(48);
+    }
+
+    &__bottom {
+      display: grid;
+      grid-template-columns: max-content max-content max-content;
+      grid-template-areas: 'copyright policy year';
+      align-items: center;
+      justify-content: space-between;
+      row-gap: 0;
+
+      margin-top: rem(64);
+
+      font-size: rem(14);
+      line-height: 1.29;
+    }
+
+    &__copyright {
+      width: auto;
+      margin: 0;
+      white-space: nowrap;
+    }
+
+    &__policy {
+      justify-self: center;
+    }
+
+    &__year {
+      margin: 0;
+      justify-self: end;
+      white-space: nowrap;
+      transform: none;
+    }
+  }
+
+  @include respond($bp-desktop) {
+    &__container {
+      min-height: rem(328);
+      padding-top: rem(64);
+      padding-bottom: rem(16);
+    }
+
+    &__top {
+      display: grid;
+      grid-template-columns: rem(132) minmax(0, rem(600)) rem(352);
+      grid-template-areas: 'brand title subscribe';
+      justify-content: space-between;
+      align-items: start;
+      column-gap: rem(32);
+      row-gap: 0;
+    }
+
+    &__brand {
+      grid-area: brand;
+    }
+
+    &__promo {
+      display: contents;
+    }
+
+    &__title {
+      grid-area: title;
+      width: 100%;
+      max-width: rem(600);
+      margin: 0;
+      font-size: rem(56);
+      line-height: 1.07;
+    }
+
+    &__subscribe {
+      grid-area: subscribe;
+      width: rem(352);
+      max-width: rem(352);
+      justify-self: end;
+    }
+
+    &__bottom {
+      display: grid;
+      grid-template-columns: rem(132) minmax(0, 1fr) rem(352);
+      grid-template-areas: 'copyright policy year';
+      justify-content: space-between;
+      align-items: center;
+      column-gap: rem(32);
+    }
+
+    &__copyright {
+      grid-area: copyright;
+      width: auto;
+      margin: 0;
+      white-space: nowrap;
+    }
+
+    &__policy {
+      grid-area: policy;
+      margin: 0;
+      justify-self: center;
+    }
+
+    &__year {
+      grid-area: year;
+      margin: 0;
+      justify-self: end;
+      transform: none;
+    }
+  }
+}

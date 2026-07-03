@@ -111,7 +111,7 @@
 .mobile-menu {
   position: fixed;
   inset: 0;
-  z-index: 100;
+  z-index: 850;
   display: none;
   flex-direction: column;
   gap: 24px;
@@ -147,6 +147,9 @@
 }
 
 .mobile-menu__socials {
+  align-self: center;
+  justify-content: center;
+  width: 100%;
   margin-top: auto;
   color: $color-on-media;
 }

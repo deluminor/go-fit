@@ -2,12 +2,17 @@
 
 html {
   overflow-y: scroll;
-  scrollbar-gutter: stable both-edges;
 }
 
 body {
-  background-color: $color-bg;
+  display: flex;
+  flex-direction: column;
   min-height: 100vh;
+  background-color: $color-bg;
+}
+
+main {
+  flex: 1 0 auto;
 }
 
 :focus-visible {
