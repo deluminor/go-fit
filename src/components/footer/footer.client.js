@@ -1,31 +1,10 @@
 import { subscribe } from '../../api/subscription.api.js';
+import { extractApiMessage } from '../../utils/api-error-message.js';
 import { LOADER } from '../../utils/constants.js';
 import { notifySuccess } from '../../utils/notify.js';
 import { setButtonLoading } from '../ui/button/button.js';
 
 const BUTTON_LOADING_CLASS = 'footer__button--loading';
-
-/**
- * @param {HTMLButtonElement} button
- * @param {boolean} isLoading
- * @returns {void}
- */
-function setFooterButtonLoading(button, isLoading) {
-  setButtonLoading(button, isLoading);
-  button.classList.toggle(BUTTON_LOADING_CLASS, isLoading);
-}
-
-/**
- * @param {{ message?: string, data?: { message?: string } } | null | undefined} result
- * @returns {string}
- */
-function getSuccessMessage(result) {
-  return (
-    result?.message ??
-    result?.data?.message ??
-    'You have successfully subscribed!'
-  );
-}
 
 /**
  * @param {HTMLElement | null} root
@@ -54,17 +33,20 @@ export function initFooter(root) {
       return;
     }
 
-    setFooterButtonLoading(submitButton, true);
+    setButtonLoading(submitButton, true, BUTTON_LOADING_CLASS);
 
     try {
       const result = await subscribe(email, { loader: LOADER.SILENT });
 
       form.reset();
-      notifySuccess(getSuccessMessage(result));
+
+      notifySuccess(
+        extractApiMessage(result) ?? 'You have successfully subscribed!',
+      );
     } catch {
-      // Error notification is handled by the common API/interceptor layer.
+      // notifyError is shown by the Axios interceptor.
     } finally {
-      setFooterButtonLoading(submitButton, false);
+      setButtonLoading(submitButton, false, BUTTON_LOADING_CLASS);
     }
   });
 }
