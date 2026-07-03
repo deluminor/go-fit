@@ -10,8 +10,8 @@ const RUNNER_ICON = renderSpriteIcon(SPRITE_ICON.RUNNING, {
 
 const STAR_ICON = renderSpriteIcon(SPRITE_ICON.STAR, {
   className: 'exercise-card__star',
-  width: 18,
-  height: 18,
+  width: 14,
+  height: 14,
 });
 
 const TRASH_ICON = renderSpriteIcon(SPRITE_ICON.TRASH, {

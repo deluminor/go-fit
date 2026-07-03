@@ -17,7 +17,7 @@
   &__rating {
     display: inline-flex;
     align-items: center;
-    gap: 2px;
+    gap: 5px;
     font-size: 12px;
     line-height: 18px;
     color: $color-heading;
@@ -25,6 +25,8 @@
 
   &__star {
     color: $color-star;
+    width: 13px;
+    height: 13px;
   }
 
   &__remove {
