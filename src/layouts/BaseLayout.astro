@@ -1,11 +1,11 @@
 ---
 import 'modern-normalize';
-import '../styles/main.scss';
-import spriteSvg from '../../public/sprite.svg?raw';
-import Footer from '../components/footer/Footer.astro';
-import Header from '../components/header/Header.astro';
-import ScrollUp from '../components/ui/scroll-up/ScrollUp.astro';
-import { withBase } from '../utils/withBase';
+import '@/styles/main.scss';
+import spriteSvg from '@public/sprite.svg?raw';
+import Footer from '@/components/footer/Footer.astro';
+import Header from '@/components/header/Header.astro';
+import ScrollUp from '@/components/ui/scroll-up/ScrollUp.astro';
+import { withBase } from '@/utils/withBase';
 
 interface Props {
   title: string;
@@ -89,7 +89,7 @@ const websiteSchema = {
     <div id="modal-root"></div>
 
     <script>
-      import { connectApiUi } from '../api/connect-ui.js';
+      import { connectApiUi } from '@/api/connect-ui.ts';
       connectApiUi();
     </script>
   </body>
